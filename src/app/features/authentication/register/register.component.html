@@ -1,0 +1,92 @@
+<div class="auth-shell">
+  <p-card class="auth-card">
+    <div class="center">
+      <span class="pi pi-user-plus" style="font-size: 2.2rem; color:#2ecc71"></span>
+      <div class="auth-title">Create a new account</div>
+      <div class="auth-subtitle">Join the Deals of the Day platform</div>
+    </div>
+
+    <!-- Use real form so (ngSubmit) triggers your TS method -->
+    <form class="p-fluid" novalidate #f="ngForm" (ngSubmit)="onRegister()">
+      <div class="field">
+        <label>Full name</label>
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="fullName"
+          name="fullName"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label>E-mail</label>
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon"><i class="pi pi-envelope"></i></span>
+          <input
+            type="email"
+            pInputText
+            [(ngModel)]="email"
+            name="email"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Account type</label>
+        <p-dropdown
+          [options]="roles"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select account type"
+          [(ngModel)]="role"
+          name="role"
+          required>
+        </p-dropdown>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
+          <input
+            type="password"
+            pInputText
+            [(ngModel)]="password"
+            name="password"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Confirm password</label>
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
+          <input
+            type="password"
+            pInputText
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            required
+          />
+        </div>
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        [disabled]="f.invalid"
+        label="Create an account"
+        class="btn-green full-w mt-3"
+        pRipple>
+      </button>
+
+      <div class="center mt-3">
+        <a routerLink="/login" class="link-blue">Log in</a>
+        <span>&nbsp;Do you already have an account?</span>
+      </div>
+    </form>
+  </p-card>
+</div>

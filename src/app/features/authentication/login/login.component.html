@@ -1,0 +1,31 @@
+<div style="padding:18px">
+  <p-card>
+    <h2>Log in</h2>
+
+    <p-selectButton
+      [options]="roles"
+      [(ngModel)]="role"
+      optionLabel="label"
+      optionValue="value">
+      <ng-template let-opt pTemplate="item">
+        <div [style.padding.px]="8"
+             [style.border]="'1px solid #d7dde6'"
+             [style.borderRadius.px]="8">
+          <div style="font-weight:700">{{ opt.label }}</div>
+          <small>{{ opt.desc }}</small>
+        </div>
+      </ng-template>
+    </p-selectButton>
+
+    <div class="p-fluid" style="margin-top:12px">
+      <span class="p-input-icon-left" style="display:block;margin-bottom:8px">
+        <i class="pi pi-envelope"></i>
+        <input type="email" pInputText [(ngModel)]="email" placeholder="email" />
+      </span>
+
+      <p-password [(ngModel)]="password" [feedback]="false" toggleMask="true"></p-password>
+
+      <button pButton label="entrance" class="p-button-primary" style="margin-top:12px" (click)="onLogin()"></button>
+    </div>
+  </p-card>
+</div>
