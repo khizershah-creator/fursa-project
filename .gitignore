@@ -1,42 +1,37 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+## 📝 Summary
+> Briefly describe the purpose of this pull request.
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+---
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
+## 🎯 Related Issue / Feature
+Fixes #<issue-number>
+or
+Implements feature: `<feature-name>`
 
-# IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+---
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
+## 💡 Changes Introduced
+- [ ] Added new component(s)
+- [ ] Updated existing UI
+- [ ] Integrated API service
+- [ ] Other (please specify):
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
+---
 
-# System files
-.DS_Store
-Thumbs.db
+## 🧪 How to Test
+1. Run `ng serve`
+2. Visit `<page>`
+3. Verify that `<functionality>` works as expected
+
+---
+
+## 📸 Screenshots (optional)
+Attach before/after UI screenshots here.
+
+---
+
+## ✅ Checklist
+- [ ] Code builds and runs locally
+- [ ] Unit tests updated/passing (if any)
+- [ ] PR title follows convention: `feat:`, `fix:`, `ui:`, `refactor:`
+- [ ] No sensitive data committed
