@@ -1,2 +1,21 @@
 /* keep empty/minimal for now to eliminate CSS/PrimeNG issues */
 body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+:root { --brand-blue: #2563eb; --brand-green:#0ea371; }
+.p-button.cta { background: var(--brand-blue); border: none; }
+.p-button.cta:enabled:hover { filter: brightness(.95); }
+:root { --brand-green:#0ea371; --brand-blue:#2563eb; }
+
+/* --- FIX: ensure nothing blocks clicks in auth pages --- */
+.auth-shell, .auth-card, form, button, input, .p-dropdown, .p-inputgroup {
+  position: relative;
+  z-index: 5; /* bring these forward */
+}
+
+body, html {
+  overflow-x: hidden;
+  background: #fff !important;
+}
+
+.p-overlay, .p-dropdown-panel {
+  z-index: 9999 !important;
+}

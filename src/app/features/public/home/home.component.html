@@ -1,0 +1,154 @@
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero__bg"></div>
+
+  <div class="hero__container">
+    <div class="hero__icon">
+      <div class="icon-tile">
+        <i class="pi pi-chart-line"></i>
+      </div>
+    </div>
+
+    <h1 class="hero__title">Deals/Opportunity Platform</h1>
+
+    <p class="hero__subtitle">
+      A secure and reliable online marketplace connecting owners of very small Saudi businesses
+      with investors
+    </p>
+
+    <div class="hero__badges">
+      <span class="badge"><i class="pi pi-users"></i> Linking investors</span>
+      <span class="dot"></span>
+      <span class="badge"><i class="pi pi-shield"></i> Safe and reliable</span>
+    </div>
+
+    <div class="hero__ctas">
+      <a routerLink="/register" class="btn btn--green">Create an account</a>
+      <a routerLink="/login" class="btn btn--ghost">Log in</a>
+    </div>
+  </div>
+
+  <nav class="sections">
+    <a class="sections__item">Technical<br />considerations</a>
+    <a class="sections__item">Integration<br />requirements</a>
+    <a class="sections__item">Database<br />diagram</a>
+    <a class="sections__item">Investor’s<br />Journey</a>
+    <a class="sections__item">The seller’s<br />journey</a>
+    <a class="sections__item">Investment<br />opportunities</a>
+    <a class="sections__item">Executive<br />Summary</a>
+  </nav>
+</section>
+
+<!-- ===== EXECUTIVE SUMMARY ===== -->
+<section class="home-exec">
+  <div class="home-exec__container">
+    <h2 class="home-exec__title">
+      Executive Summary
+      <span class="home-exec__underline"></span>
+    </h2>
+
+    <div class="home-exec__tiles">
+      <article class="h-tile h-tile--peach">
+        <div class="h-tile__icon"><i class="pi pi-check-circle"></i></div>
+        <h3 class="h-tile__title">range</h3>
+        <p class="h-tile__desc">Comprehensive and integrated MVP</p>
+      </article>
+
+      <article class="h-tile h-tile--violet">
+        <div class="h-tile__icon"><i class="pi pi-bolt"></i></div>
+        <h3 class="h-tile__title">the focus</h3>
+        <p class="h-tile__desc">Confidentiality and government verification</p>
+      </article>
+
+      <article class="h-tile h-tile--mint">
+        <div class="h-tile__icon"><i class="pi pi-award"></i></div>
+        <h3 class="h-tile__title">Value</h3>
+        <p class="h-tile__desc">Simplifying and documenting processes</p>
+      </article>
+
+      <article class="h-tile h-tile--blue">
+        <div class="h-tile__icon"><i class="pi pi-bullseye"></i></div>
+        <h3 class="h-tile__title">the goal</h3>
+        <p class="h-tile__desc">Connecting small businesses with investors</p>
+      </article>
+    </div>
+
+    <div class="home-exec__panels">
+      <div class="h-panel">
+        <div class="h-panel__label"><span class="h-dot h-dot--green"></span> Project Vision</div>
+        <p class="h-panel__text">
+          Creating a secure and reliable online marketplace that connects owners of very small
+          Saudi businesses with investors
+        </p>
+      </div>
+
+      <div class="h-panel">
+        <div class="h-panel__label"><span class="h-dot h-dot--blue"></span> Project name</div>
+        <p class="h-panel__text h-panel__text--link">“Deals / Opportunity” platform</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INVESTMENT OPPORTUNITIES SECTION ===== -->
+<section class="invest">
+  <div class="invest__container">
+    <h2 class="invest__title">
+      Investment opportunities
+      <span class="invest__underline"></span>
+    </h2>
+
+    <p class="invest__subtitle">
+      Discover diverse investment opportunities in various sectors of the Saudi economy.
+    </p>
+
+    <div class="invest__grid">
+      <article class="invest-card" *ngFor="let item of investments">
+        <div class="invest-card__img">
+          <img [src]="item.image" [alt]="item.title" />
+          <span class="badge">{{ item.category }}</span>
+        </div>
+
+        <div class="invest-card__body">
+          <h3 class="invest-card__title">{{ item.title }}</h3>
+
+          <div class="meta">
+            SAR {{ formatSar(item.capitalSar) }} Capital • {{ item.sector }}
+          </div>
+
+          <div class="submeta" *ngIf="item.customers || item.dailyCapacity">
+            {{ item.customers }}
+            <ng-container *ngIf="item.customers && item.dailyCapacity"> • </ng-container>
+            {{ item.dailyCapacity }}
+          </div>
+
+          <div class="model">
+            <h4>Simplified financial model</h4>
+            <div class="model-table">
+              <div class="row header">
+                <span>Value (ريال)</span>
+                <span>Item</span>
+              </div>
+              <div class="row">
+                <span>{{ formatSar(item.revenueSar) }} (monthly)</span>
+                <span>Revenue</span>
+              </div>
+              <div class="row">
+                <span>{{ formatSar(item.opexSar) }} (monthly)</span>
+                <span>Operating expenses</span>
+              </div>
+              <div class="row total">
+                <span>{{ formatSar(item.requiredSar) }}</span>
+                <span>Required value</span>
+              </div>
+            </div>
+          </div>
+
+          <a routerLink="/login" class="btn-login">
+            <i class="pi pi-sign-in"></i> Log in
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

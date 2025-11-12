@@ -66,6 +66,11 @@ function removeClass(element, className) {
     [className].flat().filter(Boolean).forEach((_classNames) => _classNames.split(" ").forEach(fn));
   }
 }
+function unblockBodyScroll(className = "p-overflow-hidden") {
+  const variableData = getCSSVariableByRegex(/-scrollbar-width$/);
+  (variableData == null ? void 0 : variableData.name) && document.body.style.removeProperty(variableData.name);
+  removeClass(document.body, className);
+}
 function getHiddenElementDimensions(element) {
   let dimensions = {
     width: 0,
@@ -176,6 +181,26 @@ function relativePosition(element, target, gutter = true) {
 function isElement(element) {
   return typeof HTMLElement === "object" ? element instanceof HTMLElement : element && typeof element === "object" && element !== null && element.nodeType === 1 && typeof element.nodeName === "string";
 }
+function toElement(element) {
+  let target = element;
+  if (element && typeof element === "object") {
+    if (element.hasOwnProperty("current")) {
+      target = element.current;
+    } else if (element.hasOwnProperty("el")) {
+      if (element.el.hasOwnProperty("nativeElement")) {
+        target = element.el.nativeElement;
+      } else {
+        target = element.el;
+      }
+    }
+  }
+  return isElement(target) ? target : void 0;
+}
+function appendChild(element, child) {
+  const target = toElement(element);
+  if (target) target.appendChild(child);
+  else throw new Error("Cannot append " + child + " to " + element);
+}
 function setAttributes(element, attributes = {}) {
   if (isElement(element)) {
     const computedStyles = (rule, value) => {
@@ -210,8 +235,48 @@ function setAttributes(element, attributes = {}) {
     });
   }
 }
+function fadeIn(element, duration) {
+  if (element) {
+    element.style.opacity = "0";
+    let last = +/* @__PURE__ */ new Date();
+    let opacity = "0";
+    let tick = function() {
+      opacity = `${+element.style.opacity + ((/* @__PURE__ */ new Date()).getTime() - last) / duration}`;
+      element.style.opacity = opacity;
+      last = +/* @__PURE__ */ new Date();
+      if (+opacity < 1) {
+        !!window.requestAnimationFrame && requestAnimationFrame(tick) || setTimeout(tick, 16);
+      }
+    };
+    tick();
+  }
+}
+function find(element, selector) {
+  return isElement(element) ? Array.from(element.querySelectorAll(selector)) : [];
+}
 function findSingle(element, selector) {
   return isElement(element) ? element.matches(selector) ? element : element.querySelector(selector) : null;
+}
+function focus(element, options) {
+  element && document.activeElement !== element && element.focus(options);
+}
+function getFocusableElements(element, selector = "") {
+  let focusableElements = find(element, `button:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+            [href][clientHeight][clientWidth]:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+            input:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+            select:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+            textarea:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+            [tabIndex]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+            [contenteditable]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector}`);
+  let visibleFocusableElements = [];
+  for (let focusableElement of focusableElements) {
+    if (getComputedStyle(focusableElement).display != "none" && getComputedStyle(focusableElement).visibility != "hidden") visibleFocusableElements.push(focusableElement);
+  }
+  return visibleFocusableElements;
+}
+function getFirstFocusableElement(element, selector) {
+  const focusableElements = getFocusableElements(element, selector);
+  return focusableElements.length > 0 ? focusableElements[0] : null;
 }
 function getHeight(element) {
   if (element) {
@@ -221,6 +286,20 @@ function getHeight(element) {
     return height;
   }
   return 0;
+}
+function getParentNode(element) {
+  if (element) {
+    let parent = element.parentNode;
+    if (parent && parent instanceof ShadowRoot && parent.host) {
+      parent = parent.host;
+    }
+    return parent;
+  }
+  return null;
+}
+function getLastFocusableElement(element, selector) {
+  const focusableElements = getFocusableElements(element, selector);
+  return focusableElements.length > 0 ? focusableElements[focusableElements.length - 1] : null;
 }
 function getOffset(element) {
   if (element) {
@@ -246,6 +325,36 @@ function getOuterHeight(element, margin) {
   }
   return 0;
 }
+function isExist(element) {
+  return !!(element !== null && typeof element !== "undefined" && element.nodeName && getParentNode(element));
+}
+function getTargetElement(target, currentElement) {
+  var _a;
+  if (!target) return void 0;
+  switch (target) {
+    case "document":
+      return document;
+    case "window":
+      return window;
+    case "body":
+      return document.body;
+    case "@next":
+      return currentElement == null ? void 0 : currentElement.nextElementSibling;
+    case "@prev":
+      return currentElement == null ? void 0 : currentElement.previousElementSibling;
+    case "@parent":
+      return currentElement == null ? void 0 : currentElement.parentElement;
+    case "@grandparent":
+      return (_a = currentElement == null ? void 0 : currentElement.parentElement) == null ? void 0 : _a.parentElement;
+    default:
+      if (typeof target === "string") {
+        return document.querySelector(target);
+      }
+      const isFunction2 = (obj) => !!(obj && obj.constructor && obj.call && obj.apply);
+      const element = toElement(isFunction2(target) ? target() : target);
+      return (element == null ? void 0 : element.nodeType) === 9 || isExist(element) ? element : void 0;
+  }
+}
 function getWidth(element) {
   if (element) {
     let width = element.offsetWidth;
@@ -255,6 +364,9 @@ function getWidth(element) {
   }
   return 0;
 }
+function isVisible(element) {
+  return !!(element && element.offsetParent != null);
+}
 function isTouchDevice() {
   return "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 }
@@ -263,6 +375,28 @@ function remove(element) {
   if (element) {
     if (!("remove" in Element.prototype)) (_a = element.parentNode) == null ? void 0 : _a.removeChild(element);
     else element.remove();
+  }
+}
+function removeChild(element, child) {
+  const target = toElement(element);
+  if (target) target.removeChild(child);
+  else throw new Error("Cannot remove " + child + " from " + element);
+}
+function scrollInView(container, item) {
+  let borderTopValue = getComputedStyle(container).getPropertyValue("borderTopWidth");
+  let borderTop = borderTopValue ? parseFloat(borderTopValue) : 0;
+  let paddingTopValue = getComputedStyle(container).getPropertyValue("paddingTop");
+  let paddingTop = paddingTopValue ? parseFloat(paddingTopValue) : 0;
+  let containerRect = container.getBoundingClientRect();
+  let itemRect = item.getBoundingClientRect();
+  let offset = itemRect.top + document.body.scrollTop - (containerRect.top + document.body.scrollTop) - borderTop - paddingTop;
+  let scroll = container.scrollTop;
+  let elementHeight = container.clientHeight;
+  let itemHeight = getOuterHeight(item);
+  if (offset < 0) {
+    container.scrollTop = scroll + offset;
+  } else if (offset + itemHeight > elementHeight) {
+    container.scrollTop = scroll + offset - elementHeight + itemHeight;
   }
 }
 
@@ -372,6 +506,17 @@ function equals(obj1, obj2, field) {
   if (field) return resolveFieldData(obj1, field) === resolveFieldData(obj2, field);
   else return deepEquals(obj1, obj2);
 }
+function findLastIndex(arr, callback) {
+  let index = -1;
+  if (isNotEmpty(arr)) {
+    try {
+      index = arr.findLastIndex(callback);
+    } catch (e) {
+      index = arr.lastIndexOf([...arr].reverse().find(callback));
+    }
+  }
+  return index;
+}
 function isObject(value, empty = true) {
   return value instanceof Object && value.constructor === Object && (empty || Object.keys(value).length !== 0);
 }
@@ -394,6 +539,9 @@ function isArray(value, empty = true) {
 }
 function isNumber(value) {
   return isNotEmpty(value) && !isNaN(value);
+}
+function isPrintableCharacter(char = "") {
+  return isNotEmpty(char) && char.length === 1 && !!char.match(/\S| /);
 }
 function matchRegex(str, regex) {
   if (regex) {
@@ -1426,28 +1574,45 @@ export {
   hasClass,
   addClass,
   removeClass,
+  unblockBodyScroll,
+  getViewport,
+  getWindowScrollLeft,
+  getWindowScrollTop,
   absolutePosition,
   getOuterWidth,
   relativePosition,
+  appendChild,
   setAttributes,
+  fadeIn,
   findSingle,
+  focus,
+  getFocusableElements,
+  getFirstFocusableElement,
   getHeight,
+  getLastFocusableElement,
   getOffset,
   getOuterHeight,
+  getTargetElement,
   getWidth,
+  isVisible,
   isTouchDevice,
   remove,
+  removeChild,
+  scrollInView,
   EventBus,
   isEmpty,
+  deepEquals,
   isNotEmpty,
   resolveFieldData,
   equals,
+  findLastIndex,
   isObject,
   resolve,
   isString,
   getKeyValue,
   isArray,
   isNumber,
+  isPrintableCharacter,
   matchRegex,
   minifyCSS,
   toKebabCase,
@@ -1469,4 +1634,4 @@ export {
   TranslationKeys,
   TreeDragDropService
 };
-//# sourceMappingURL=chunk-EQHGUFZG.js.map
+//# sourceMappingURL=chunk-3V4PIHN5.js.map

@@ -1,31 +1,83 @@
-<div style="padding:18px">
-  <p-card>
-    <h2>Log in</h2>
+<div class="login-shell">
+  <div class="panel">
 
-    <p-selectButton
-      [options]="roles"
-      [(ngModel)]="role"
-      optionLabel="label"
-      optionValue="value">
-      <ng-template let-opt pTemplate="item">
-        <div [style.padding.px]="8"
-             [style.border]="'1px solid #d7dde6'"
-             [style.borderRadius.px]="8">
-          <div style="font-weight:700">{{ opt.label }}</div>
-          <small>{{ opt.desc }}</small>
-        </div>
-      </ng-template>
-    </p-selectButton>
+    <!-- Back -->
+    <a class="back" routerLink="/">
+      <i class="pi pi-arrow-left"></i>
+      <span>Return to homepage</span>
+    </a>
 
-    <div class="p-fluid" style="margin-top:12px">
-      <span class="p-input-icon-left" style="display:block;margin-bottom:8px">
-        <i class="pi pi-envelope"></i>
-        <input type="email" pInputText [(ngModel)]="email" placeholder="email" />
-      </span>
-
-      <p-password [(ngModel)]="password" [feedback]="false" toggleMask="true"></p-password>
-
-      <button pButton label="entrance" class="p-button-primary" style="margin-top:12px" (click)="onLogin()"></button>
+    <!-- Top icon -->
+    <div class="big-icon">
+      <i class="pi pi-sign-in"></i>
     </div>
-  </p-card>
+
+    <!-- Heading -->
+    <h1 class="title">Log in</h1>
+    <p class="subtitle">Log in to your account on the Deals platform</p>
+
+    <!-- Account type -->
+    <div class="section-label">Account type</div>
+    <div class="role-tiles">
+      <!-- Vendor (green) -->
+      <div
+        class="role-card"
+        [ngClass]="{ active: role === 'seller', vendor: role === 'seller' }"
+        (click)="role = 'seller'">
+        <div class="role-card__title">Vendor</div>
+        <div class="role-card__desc">I want to sell or finance my business</div>
+      </div>
+
+      <!-- Investor (blue) -->
+      <div
+        class="role-card"
+        [ngClass]="{ active: role === 'investor', investor: role === 'investor' }"
+        (click)="role = 'investor'">
+        <div class="role-card__title">Investor</div>
+        <div class="role-card__desc">I am looking for investment opportunities</div>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <label class="field-label">e-mail</label>
+    <div class="input-wrap">
+      <input
+        type="email"
+        pInputText
+        [(ngModel)]="email"
+        placeholder="example@email.com" />
+      <i class="pi pi-envelope input-icon"></i>
+    </div>
+
+    <!-- Password -->
+    <label class="field-label">password</label>
+    <div class="input-wrap">
+      <p-password
+        [(ngModel)]="password"
+        [toggleMask]="true"
+        [feedback]="false"
+        placeholder="••••••••">
+      </p-password>
+      <i class="pi pi-lock input-icon"></i>
+    </div>
+
+    <!-- CTA -->
+    <button
+      pButton
+      type="button"
+      class="btn-blue full-w cta"
+      [disabled]="!email || !password || isSubmitting"
+      icon="pi pi-arrow-right"
+      iconPos="left"
+      label="entrance"
+      (click)="onLogin()"
+      pRipple>
+    </button>
+
+    <!-- Footer -->
+    <div class="bottom-note">
+      <a routerLink="/register" class="link-blue">Create a new account</a>
+      <span>Don’t have an account?</span>
+    </div>
+  </div>
 </div>

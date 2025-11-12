@@ -1,61 +1,81 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, ValidationErrors } from '@angular/forms';
 
-import { AuthService, Role } from '../../../core/guards/services/auth.service';
-
-// PrimeNG (NgModule-based) – inlined to avoid spread/static-analysis issues
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
 import { RippleModule } from 'primeng/ripple';
 
+type Role = 'vendor' | 'investor';
+
 @Component({
-  standalone: true,
   selector: 'app-register',
+  standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     RouterModule,
-    CardModule,         // <p-card>
-    InputTextModule,    // pInputText
-    PasswordModule,     // (use if you switch to pPassword)
-    ButtonModule,       // pButton
-    DropdownModule,     // <p-dropdown>
-    RippleModule,       // pRipple (optional)
+    ReactiveFormsModule,
+    // PrimeNG
+    CardModule, InputTextModule, DropdownModule, PasswordModule, ButtonModule, RippleModule
   ],
   templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
-  fullName = '';
-  email = '';
-  password = '';
-  confirmPassword = '';
-  role: Role = 'investor';
+
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private loc = inject(Location);
 
   roles = [
-    { label: 'seller', value: 'seller' },
-    { label: 'investor', value: 'investor' },
+    { label: 'vendor', value: 'vendor' as Role },
+    { label: 'investor', value: 'investor' as Role },
   ];
 
-  constructor(private auth: AuthService, private router: Router) {}
+  form: FormGroup = this.fb.group(
+    {
+      fullName: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      role: ['investor' as Role, Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirm: ['', [Validators.required]],
+    },
+    { validators: [RegisterComponent.matchPasswords()] }
+  );
 
-  async onRegister() {
-    // Basic client checks (HTML5 will also help)
-    if (!this.fullName || !this.email || !this.password) {
-      alert('Please fill all fields.');
-      return;
-    }
-    if (this.password !== this.confirmPassword) {
-      alert('Passwords do not match.');
-      return;
-    }
-
-    // Create session + navigate by role
-    await this.auth.register(this.fullName, this.email, this.password, this.role);
-    await this.router.navigate(['/', this.role]); // → /seller or /investor
+  // nice sugar to use in template: f['fullName'], f['email'] etc.
+  get f() {
+    return this.form.controls as Record<string, any>;
   }
+
+  static matchPasswords() {
+    return (group: FormGroup): ValidationErrors | null => {
+      const p = group.get('password')?.value;
+      const c = group.get('confirm')?.value;
+      return p && c && p !== c ? { mismatch: true } : null;
+    };
+  }
+
+  goBack() {
+    this.loc.back();
+  }
+
+  onSubmit() {
+    // ensure we can click the button only when valid; still mark all just in case
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
+
+    // TODO: call your actual API/AuthService here.
+    // await this.auth.register({ ...this.form.value });
+
+    // For now, navigate based on role:
+    const role: Role = this.form.value.role;
+    this.router.navigate([role === 'vendor' ? '/seller' : '/investor']);
+    
+  }
+  
 }

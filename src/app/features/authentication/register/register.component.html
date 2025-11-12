@@ -1,87 +1,108 @@
 <div class="auth-shell">
   <p-card class="auth-card">
-    <div class="center">
-      <span class="pi pi-user-plus" style="font-size: 2.2rem; color:#2ecc71"></span>
-      <div class="auth-title">Create a new account</div>
-      <div class="auth-subtitle">Join the Deals of the Day platform</div>
+    <!-- Back button -->
+    <button type="button" class="back-btn" (click)="goBack()" pRipple>
+      <i class="pi pi-arrow-left"></i>
+      <span>Back</span>
+    </button>
+
+    <!-- Top icon -->
+    <div class="center head__icon">
+      <span class="pi pi-user-plus badge-icon"></span>
     </div>
 
-    <!-- Use real form so (ngSubmit) triggers your TS method -->
-    <form class="p-fluid" novalidate #f="ngForm" (ngSubmit)="onRegister()">
-      <div class="field">
-        <label>Full name</label>
-        <input
-          type="text"
-          pInputText
-          [(ngModel)]="fullName"
-          name="fullName"
-          required
-        />
-      </div>
+    <h1 class="auth-title center">Create a new account</h1>
+    <div class="auth-subtitle center">Join the Deals of the Day platform</div>
 
+    <form [formGroup]="form" class="p-fluid" (ngSubmit)="onSubmit()">
+      <!-- Full name -->
       <div class="field">
-        <label>E-mail</label>
-        <div class="p-inputgroup">
-          <span class="p-inputgroup-addon"><i class="pi pi-envelope"></i></span>
-          <input
-            type="email"
-            pInputText
-            [(ngModel)]="email"
-            name="email"
-            required
-          />
+        <label>full name</label>
+        <div class="input-wrap">
+          <input pInputText class="text-input has-suffix"
+                 formControlName="fullName"
+                 placeholder="Enter your full name"/>
+          <i class="pi pi-user suffix"></i>
+        </div>
+        <div class="err" *ngIf="f['fullName'].touched && f['fullName'].invalid">
+          Please enter at least 3 characters.
         </div>
       </div>
 
+      <!-- Email -->
+      <div class="field">
+        <label>e-mail</label>
+        <div class="input-wrap">
+          <input pInputText class="text-input has-suffix"
+                 type="email"
+                 formControlName="email"
+                 placeholder="example@email.com"/>
+          <i class="pi pi-envelope suffix"></i>
+        </div>
+        <div class="err" *ngIf="f['email'].touched && f['email'].invalid">
+          Please enter a valid email address.
+        </div>
+      </div>
+
+      <!-- Role -->
       <div class="field">
         <label>Account type</label>
         <p-dropdown
+          formControlName="role"
           [options]="roles"
           optionLabel="label"
           optionValue="value"
-          placeholder="Select account type"
-          [(ngModel)]="role"
-          name="role"
-          required>
+          styleClass="dd text-input"
+          [style]="{ width:'100%' }"
+          placeholder="Select account type">
         </p-dropdown>
       </div>
 
+      <!-- Password -->
       <div class="field">
-        <label>Password</label>
-        <div class="p-inputgroup">
-          <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
-          <input
-            type="password"
-            pInputText
-            [(ngModel)]="password"
-            name="password"
-            required
-          />
+        <label>password</label>
+        <div class="input-wrap">
+          <p-password
+            formControlName="password"
+            [feedback]="false"
+            [toggleMask]="true"
+            inputStyleClass="text-input pw-input has-suffix"
+            styleClass="pw">
+          </p-password>
+          <i class="pi pi-lock suffix"></i>
+        </div>
+        <div class="err" *ngIf="f['password'].touched && f['password'].hasError('minlength')">
+          At least 8 characters.
         </div>
       </div>
 
+      <!-- Confirm -->
       <div class="field">
         <label>Confirm password</label>
-        <div class="p-inputgroup">
-          <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
-          <input
-            type="password"
-            pInputText
-            [(ngModel)]="confirmPassword"
-            name="confirmPassword"
-            required
-          />
+        <div class="input-wrap">
+          <p-password
+            formControlName="confirm"
+            [feedback]="false"
+            [toggleMask]="true"
+            inputStyleClass="text-input pw-input has-suffix"
+            styleClass="pw">
+          </p-password>
+          <i class="pi pi-lock suffix"></i>
+        </div>
+        <div class="err" *ngIf="form.touched && (form.hasError('mismatch') || f['confirm'].invalid)">
+          Passwords must match.
         </div>
       </div>
 
-      <button
-        pButton
-        type="submit"
-        [disabled]="f.invalid"
-        label="Create an account"
-        class="btn-green full-w mt-3"
-        pRipple>
-      </button>
+      <!-- CTA -->
+      <!-- CTA -->
+<button
+  pButton
+  type="submit"
+  class="cta raise btn-green w-full"
+  label="Create an account">
+</button>
+
 
       <div class="center mt-3">
         <a routerLink="/login" class="link-blue">Log in</a>

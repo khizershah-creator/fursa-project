@@ -1,20 +1,23 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, ActivatedRouteSnapshot, Router } from '@angular/router';
-import { AuthService, Role } from './services/auth.service'; // ✅ fixed import path
+import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { AuthService, Role } from './services/auth.service';
 
-export const RoleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+export const RoleGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  _state: RouterStateSnapshot
+) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  const requiredRole = route.data['role'] as Role;
+  const requiredRole = route.data?.['role'] as Role | undefined;
   const user = auth.me();
 
-  // ✅ user exists and has correct role → allow
-  if (user && user.role === requiredRole) return true;
+  // logged in and either role matches or no specific role required
+  if (user && (!requiredRole || user.role === requiredRole)) return true;
 
-  // ✅ user logged in but wrong role → redirect to their correct area
-  if (user?.role) return router.createUrlTree(['/' + user.role]);
+  // logged in but wrong role -> send to their correct area
+  if (user?.role) return router.createUrlTree(['/', user.role]);
 
-  // ❌ not logged in → redirect to login
+  // not logged in -> login
   return router.createUrlTree(['/login']);
 };
